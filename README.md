@@ -44,7 +44,7 @@ docker run -tid \
 <image id>
 ```
 
-7. (If using Docker Desktop) Try out these commands:
+7. (If using Docker Desktop) Try out these commands on the exec tab of the container:
 ```
 curl http://localhost:8000/ping
 curl http://localhost:8000/read_root
