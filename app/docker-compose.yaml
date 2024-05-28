@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  fastapi-app:
+    build: .
+    container_name: fastapi-docker-ml-app
+    volumes:
+      - /Users/kiaraesguerra/03-train-inference-compose/fastapi-docker-ml/app/train_data.csv:/app/train_data.csv
+      - /Users/kiaraesguerra/03-train-inference-compose/fastapi-docker-ml/app/test_data.csv:/app/test_data.csv
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "uvicorn app:app --host 0.0.0.0 --port 8000"
+
+  train-service:
+    build: .
+    container_name: fastapi-docker-ml-train
+    depends_on:
+      - fastapi-app
+    volumes:
+      - /Users/kiaraesguerra/03-train-inference-compose/fastapi-docker-ml/app/train_data.csv:/app/train_data.csv:/app/train_data.csv
+    command: >
+      sh -c "sleep 5 && curl -X POST http://fastapi-app:8000/train -H 'accept: application/json' -F 'file=@/app/train_data.csv'"
+
+  test-service:
+    build: .
+    container_name: fastapi-docker-ml-test
+    depends_on:
+      - train-service
+    volumes:
+      - /Users/kiaraesguerra/03-train-inference-compose/fastapi-docker-ml/app/train_data.csv:/app/train_data.csvtest_data.csv:/app/test_data.csv
+    command: >
+      sh -c "sleep 10 && curl -X POST http://fastapi-app:8000/predict -H 'accept: application/json' -F 'file=@/app/test_data.csv'"

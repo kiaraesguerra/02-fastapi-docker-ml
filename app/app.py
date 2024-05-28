@@ -72,6 +72,10 @@ def predict(file: UploadFile = File(...)):
         )
 
     predictions = model.predict(df)
+    # Save as csv file
+    df["predictions"] = predictions
+    df.to_csv("predictions.csv", index=False)
+
     return {"predictions": predictions.tolist()}
 
 
